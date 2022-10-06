@@ -1,0 +1,213 @@
+---
+title: "Activity Chapter 1"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+### Exercise 1
+
+- Create a dataframe from the following vectors
+
+```{r}
+X <- c(1,2,3,1,4,5,2)
+Y <- c(0,3,2,0,5,9,3)
+Z <- c(1,1,1,1,1,1,1)
+W <- c(5,4,3,2,1,0,4)
+
+```
+
+- Remove duplicates
+- Name the resulting rows as "CA","SE","MA","BA","VA","SA"
+- Create a new column T that is the sum of the first two divided by the first
+- Change the X value of province BA by 2
+- Select those provinces whose Y value is less than 4
+- Create a factor that indicates whether the city is coastal or not (C or I) and add it as a column
+
+
+** SOLUTION **
+
+- Create a dataframe from the following vectors
+
+```{r}
+X <- c(1,2,3,1,4,5,2)
+Y <- c(0,3,2,0,5,9,3)
+Z <- c(1,1,1,1,1,1,1)
+W <- c(5,4,3,2,1,0,4)
+
+data <- data.frame(X,Y,Z,W)
+data
+
+```
+
+
+- Remove duplicates
+
+```{r}
+
+M <- unique(data) 
+M
+
+```
+
+- Name the resulting rows as "CA","SE","MA","BA","VA","SA"
+
+```{r}
+
+row.names(M) <- c("CA","SE","MA","BA","VA","SA") 
+
+M
+```
+
+- Create a new column T that is the sum of the first two divided by the first
+
+```{r}
+
+M$T <- (M$X+M$Y)/M$X 
+M
+
+```
+
+- Change the X value of province BA by 2
+
+```{r}
+
+M[rownames(M)=="BA","X"] <-2 
+M
+```
+
+- Select those provinces whose Y value is less than 4
+
+
+```{r}
+
+M[M$Y<4,] 
+M
+
+```
+
+- Create a factor that indicates whether the city is coastal or not (C or I) and add it as a column
+
+```{r}
+
+M$costa <- factor(c("C","I","I","C","C","I")) 
+M
+
+lapply(M,class) # Specifies the data type of each column of the dataframe
+M
+
+```
+
+
+
+### Exercise 2
+
+
+- Load the dataset at the url http://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv indicating that the missing values are "?"
+
+`url <-"http://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv"`.
+
+If the url doesn't work, import the file from `forestfires.csv`.
+
+- Make a SUMMARY of the dataframe.
+- What is the dimension of the dataframe?
+- Inspect the data, what class is each type? Extract the different values that the factors take.
+- Indicates the proportion of missing values per column using sum and is.na and an apply (uses nrow).
+- Edit the FFMC column taking it to the range 20 to 96.
+- Gives an average of temperatures with respect to the days of the week and the months of the year.
+- Returns the day of the week Monday, of the month of August with wind value between 3 and 6.
+
+
+** SOLUTION **
+
+Load the dataset
+
+```{r}
+
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv"
+
+datos <- read.csv(url,header=TRUE)
+head(datos)
+
+```
+
+Make a SUMMARY of the dataframe.
+
+```{r}
+
+str(datos)
+
+summary(datos)
+
+```
+
+Dataframe dimension
+
+```{r}
+
+dim(datos)
+
+```
+517 rows and 13 columns
+
+
+- Inspect the data, what class is each type? Extract the different values that the factors take.
+
+```{r}
+
+sapply(datos,class) # each columns class
+
+unique(datos$month) #get the unique values of the month column
+
+#We include a function to see how this section can be done automatically. 
+
+factores<- which(sapply(datos,class)=="character") # we select the categorical variables (factors)
+factores
+
+for (i in 1:length(factores)){ # for each categorical variable we show the different values that it takes
+ print(unique(datos[,factores[i]]))
+} 
+
+```
+
+
+- Indicates the proportion of missing values per column using sum and is.na and an apply (uses nrow).
+
+
+```{r}
+
+apply(is.na(datos),2,sum)/nrow(dat)*100 
+
+```
+
+Edit the FFMC column bringing it to the range 20 to 96.
+
+```{r}
+
+datos$FFMC2 <- ifelse(datos$FFMC < 20,20,ifelse(datos$FFMC >96,96,datos$FFMC))
+
+summary(datos$FFMC3)
+
+```
+
+- Gives an average of temperatures with respect to the days of the week and the months of the year.
+
+
+```{r}
+
+#average temperatures according to the days of the week
+tapply(datos$temp, datos$day, mean) 
+
+#average temperatures according to the months of the year
+tapply(datos$temp, datos$month, mean) 
+
+```
+
+Returns the day of the week Monday, of the month of August with wind value between 3 and 6.
+
+```{r}
+
+datos[(datos$day=="mon")&(datos$month=="aug")&(datos$wind>=3 & datos$wind<=6 ),]
+
+```
